@@ -373,28 +373,28 @@ const attackTypes: AttackType[] = [
     name: 'DNS Spoofing',
     description: 'DHCP + DNS spoofing attack demonstration',
     icon: '🌐',
-    dataFile: '/demo.json'
+    dataFile: `${process.env.PUBLIC_URL || ''}/demo.json`
   },
   {
     id: 'traffic_hijacking',
     name: 'Traffic Hijacking',
     description: 'Man-in-the-middle traffic interception',
     icon: '🕷️',
-    dataFile: '/traffic_hijacking_demo.json'
+    dataFile: `${process.env.PUBLIC_URL || ''}/traffic_hijacking_demo.json`
   },
   {
     id: 'installer_packages',
     name: 'Installer Packages',
     description: 'Malicious installer packages execution',
     icon: '📦',
-    dataFile: '/installer_packages_demo.json'
+    dataFile: `${process.env.PUBLIC_URL || ''}/installer_packages_demo.json`
   },
   {
     id: 'udev_rules',
     name: 'Udev Rules',
     description: 'Device event persistence via udev rules',
     icon: '⚙️',
-    dataFile: '/udev_rules_demo.json'
+    dataFile: `${process.env.PUBLIC_URL || ''}/udev_rules_demo.json`
   }
 ];
 
