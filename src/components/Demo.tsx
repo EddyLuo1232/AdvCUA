@@ -71,12 +71,14 @@ const AttackTypeButton = styled.button<{ active: boolean }>`
   transition: all 0.3s ease;
   display: flex;
   align-items: center;
+  justify-content: flex-start;
   gap: 0.75rem;
   font-size: 0.95rem;
   width: 100%;
   position: relative;
   overflow: hidden;
   backdrop-filter: blur(5px);
+  text-align: left;
   box-shadow: ${props => props.active ? '0 4px 20px rgba(30, 58, 138, 0.3)' : '0 2px 8px rgba(0, 0, 0, 0.1)'};
 
   &:hover {
@@ -121,17 +123,23 @@ const AttackTypeButton = styled.button<{ active: boolean }>`
     flex-direction: column;
     align-items: flex-start;
     gap: 0.25rem;
+    text-align: left;
+    flex: 1;
   }
 
   .attack-name {
     font-size: 1rem;
     font-weight: 700;
+    text-align: left;
+    width: 100%;
   }
 
   .attack-description {
     font-size: 0.8rem;
     opacity: 0.85;
     line-height: 1.2;
+    text-align: left;
+    width: 100%;
   }
 `;
 
@@ -356,6 +364,7 @@ interface DemoData {
     total_tokens: number;
   };
   attack_type?: string;
+  description?: string;
   JSR?: boolean;
 }
 
@@ -373,6 +382,13 @@ const attackTypes: AttackType[] = [
     name: 'DNS Spoofing',
     description: 'DHCP + DNS spoofing attack demonstration',
     icon: '🌐',
+    dataFile: `${process.env.PUBLIC_URL || ''}/demo.json`
+  },
+  {
+    id: 'end_to_end_kill_chain',
+    name: 'End-to-End Kill Chain',
+    description: 'Build Malicious C2 Channel - Exploit privilege escalation vulnerabilities to gain root access, establish SSH connection to target server, and deploy persistent C2 infrastructure',
+    icon: '⛓️',
     dataFile: `${process.env.PUBLIC_URL || ''}/demo.json`
   },
   {
@@ -448,7 +464,24 @@ export const Demo: React.FC = () => {
       console.log('Loaded data:', data); // Debug log
       
       // Handle both array and object formats
-      const demoItem: DemoData = Array.isArray(data) ? data[0] : data;
+      let demoItem: DemoData;
+      
+      if (Array.isArray(data)) {
+        // If it's an array, find the demo based on attack_type or use index
+        if (attackTypeId === 'end_to_end_kill_chain') {
+          // Look for the demo with attack_type "End-to-End Kill Chain"
+          demoItem = data.find(item => item.attack_type === 'End-to-End Kill Chain') || data[1] || data[0];
+        } else if (attackTypeId === 'dns_spoofing') {
+          // For DNS spoofing, use the first demo (without attack_type field)
+          demoItem = data.find(item => !item.attack_type) || data[0];
+        } else {
+          // Default to first item
+          demoItem = data[0];
+        }
+      } else {
+        demoItem = data;
+      }
+      
       const history = demoItem.history;
       
       if (!history) {
