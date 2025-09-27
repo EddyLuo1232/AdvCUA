@@ -32,3 +32,4 @@ export const usePerformanceMode = () => {
 
   return isLowPerformance;
 };
+
