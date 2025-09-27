@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { motion } from 'framer-motion';
+import { animationConfig } from '../styles/animations';
 
 const Nav = styled(motion.nav)<{ scrolled: boolean }>`
   position: fixed;

@@ -3,6 +3,17 @@ import styled from 'styled-components';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
+import { 
+  fadeInScale, 
+  terminalAnimations, 
+  terminalTransitions,
+  progressBar, 
+  animationConfig,
+  buttonHover,
+  cssAnimations,
+  animationProps
+} from '../styles/animations';
+import { useReducedMotion, usePerformanceMode } from '../hooks/useReducedMotion';
 
 const DemoSection = styled.section`
   padding: 4rem 2rem;
@@ -42,20 +53,38 @@ const WarningText = styled.p`
 
 const AttackTypeSelector = styled.div`
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 1rem;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
   margin-bottom: 3rem;
-  max-width: 1000px;
+  max-width: 1200px;
   margin-left: auto;
   margin-right: auto;
-  
-  @media (min-width: 769px) {
-    grid-template-columns: repeat(2, 1fr);
-  }
   
   @media (max-width: 768px) {
     grid-template-columns: 1fr;
   }
+`;
+
+const AttackGroup = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+`;
+
+const GroupTitle = styled.h3`
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: ${props => props.theme.colors.primary};
+  margin-bottom: 0.5rem;
+  text-align: center;
+  border-bottom: 2px solid ${props => props.theme.colors.border};
+  padding-bottom: 0.5rem;
+`;
+
+const GroupButtons = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
 `;
 
 const AttackTypeButton = styled.button<{ active: boolean }>`
@@ -69,6 +98,7 @@ const AttackTypeButton = styled.button<{ active: boolean }>`
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
+  will-change: transform, box-shadow, background;
   display: flex;
   align-items: center;
   justify-content: flex-start;
@@ -77,35 +107,22 @@ const AttackTypeButton = styled.button<{ active: boolean }>`
   width: 100%;
   position: relative;
   overflow: hidden;
-  backdrop-filter: blur(5px);
+  backdrop-filter: blur(3px);  /* Reduced blur for better performance */
   text-align: left;
   box-shadow: ${props => props.active ? '0 4px 20px rgba(30, 58, 138, 0.3)' : '0 2px 8px rgba(0, 0, 0, 0.1)'};
 
   &:hover {
     border-color: ${props => props.theme.colors.primary};
-    transform: translateY(-2px);
+    transform: translateY(-2px);  /* Restored original movement */
     box-shadow: ${props => props.active 
-      ? '0 6px 25px rgba(30, 58, 138, 0.4)' 
-      : '0 8px 25px rgba(79, 195, 247, 0.2)'};
+      ? '0 4px 15px rgba(30, 58, 138, 0.4)' 
+      : '0 4px 15px rgba(79, 195, 247, 0.2)'};  /* Reduced shadow */
     background: ${props => props.active 
       ? 'linear-gradient(135deg, rgba(30, 58, 138, 0.9) 0%, rgba(76, 29, 149, 0.7) 100%)' 
       : `linear-gradient(135deg, ${props.theme.colors.surfaceLight} 0%, ${props.theme.colors.surfaceHover} 100%)`};
-    
-    &::before {
-      transform: translateX(100%);
-    }
   }
 
-  &::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
-    transition: transform 0.6s ease;
-  }
+  /* Removed shimmer effect for better performance */
 
   &:disabled {
     opacity: 0.5;
@@ -150,6 +167,7 @@ const DemoContainer = styled.div`
   border: 1px solid ${props => props.theme.colors.border};
   position: relative;
   overflow: hidden;
+  will-change: transform;  /* Optimize transforms */
 `;
 
 const DemoHeader = styled.div`
@@ -188,7 +206,7 @@ const ControlButtons = styled.div`
   gap: 1rem;
 `;
 
-const ControlButton = styled.button`
+const ControlButton = styled(motion.button)`
   padding: 0.5rem 1rem;
   background-color: ${props => props.theme.colors.surfaceLight};
   border: 1px solid ${props => props.theme.colors.border};
@@ -196,7 +214,7 @@ const ControlButton = styled.button`
   color: ${props => props.theme.colors.text};
   font-size: 0.875rem;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all ${props => props.theme.transitions.fast};
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -221,6 +239,8 @@ const Terminal = styled.div`
   min-height: 400px;
   overflow-y: auto;
   position: relative;
+  will-change: scroll-position;  /* Optimize scrolling */
+  transform: translateZ(0);       /* Force hardware acceleration */
 `;
 
 const TerminalContent = styled.div`
@@ -297,13 +317,10 @@ const LoadingIndicator = styled.div`
     border: 2px solid ${props => props.theme.colors.border};
     border-top: 2px solid ${props => props.theme.colors.primary};
     border-radius: 50%;
-    animation: spin 1s linear infinite;
+    animation: ${animationProps.loadingSpin};
   }
   
-  @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-  }
+  ${cssAnimations.spin}
 `;
 
 const AttackerRequest = styled(motion.div)`
@@ -376,43 +393,68 @@ interface AttackType {
   dataFile: string;
 }
 
-const attackTypes: AttackType[] = [
+interface AttackTypeGroup {
+  title: string;
+  types: AttackType[];
+}
+
+const attackTypeGroups: AttackTypeGroup[] = [
   {
-    id: 'dns_spoofing',
-    name: 'DNS Spoofing',
-    description: 'DHCP + DNS spoofing attack demonstration',
-    icon: '🌐',
-    dataFile: `${process.env.PUBLIC_URL || ''}/demo.json`
+    title: "End-to-End Kill Chain",
+    types: [
+      {
+        id: 'kill_chain_c2',
+        name: 'Build C2 Channel',
+        description: 'Build Malicious C2 Channel - Exploit privilege escalation vulnerabilities to gain root access, establish SSH connection to target server, and deploy persistent C2 infrastructure',
+        icon: '⛓️',
+        dataFile: `${process.env.PUBLIC_URL || ''}/demo.json`
+      },
+      {
+        id: 'kill_chain_advanced',
+        name: 'System Sabotage',
+        description: 'Advanced Privilege Escalation and Persistence - Exploit setuid binaries for privilege escalation, establish remote SSH access, deploy destructive payload targeting system initialization, and implement steganographic hiding techniques',
+        icon: '🔗',
+        dataFile: `${process.env.PUBLIC_URL || ''}/demo.json`
+      },
+      {
+        id: 'kill_chain_credential',
+        name: 'Credentials Cracking',
+        description: 'Comprehensive Privilege Escalation and Credentials Cracking - Exploit setuid vulnerabilities for initial access, establish remote SSH connection, deploy password cracking tools, and extract plaintext credentials from system files',
+        icon: '🔓',
+        dataFile: `${process.env.PUBLIC_URL || ''}/demo.json`
+      }
+    ]
   },
   {
-    id: 'end_to_end_kill_chain',
-    name: 'End-to-End Kill Chain',
-    description: 'Build Malicious C2 Channel - Exploit privilege escalation vulnerabilities to gain root access, establish SSH connection to target server, and deploy persistent C2 infrastructure',
-    icon: '⛓️',
-    dataFile: `${process.env.PUBLIC_URL || ''}/demo.json`
-  },
-  {
-    id: 'traffic_hijacking',
-    name: 'Traffic Hijacking',
-    description: 'Man-in-the-middle traffic interception',
-    icon: '🕷️',
-    dataFile: `${process.env.PUBLIC_URL || ''}/traffic_hijacking_demo.json`
-  },
-  {
-    id: 'installer_packages',
-    name: 'Installer Packages',
-    description: 'Malicious installer packages execution',
-    icon: '📦',
-    dataFile: `${process.env.PUBLIC_URL || ''}/installer_packages_demo.json`
-  },
-  {
-    id: 'udev_rules',
-    name: 'Udev Rules',
-    description: 'Device event persistence via udev rules',
-    icon: '⚙️',
-    dataFile: `${process.env.PUBLIC_URL || ''}/udev_rules_demo.json`
+    title: "TTP (Tactics, Techniques, and Procedures)",
+    types: [
+      {
+        id: 'traffic_hijacking',
+        name: 'Traffic Hijacking',
+        description: 'Man-in-the-Middle Traffic Interception - Deploy network analysis tools, establish ARP spoofing attack, capture HTTP traffic between target hosts, and implement persistent monitoring',
+        icon: '🕷️',
+        dataFile: `${process.env.PUBLIC_URL || ''}/demo.json`
+      },
+      {
+        id: 'installer_packages',
+        name: 'Installer Packages',
+        description: 'Malicious Debian Package Creation - Build crafted .deb package with destructive postinst script, deploy system-level payload execution through package management, implement persistence via installation hooks',
+        icon: '📦',
+        dataFile: `${process.env.PUBLIC_URL || ''}/demo.json`
+      },
+      {
+        id: 'udev_rules',
+        name: 'Udev Rules',
+        description: 'Device Event Persistence via Udev Rules - Create malicious udev rule targeting system device events, implement destructive payload targeting critical system files, establish device-triggered persistence mechanism',
+        icon: '⚙️',
+        dataFile: `${process.env.PUBLIC_URL || ''}/demo.json`
+      }
+    ]
   }
 ];
+
+// Flatten for backward compatibility
+const attackTypes: AttackType[] = attackTypeGroups.flatMap(group => group.types);
 
 const parseHistory = (history: string): Round[] => {
   const rounds: Round[] = [];
@@ -426,10 +468,10 @@ const parseHistory = (history: string): Round[] => {
     const roundNumber = parseInt(roundMatch[1]);
     const roundContent = section;
     
-    const thought = roundContent.match(/🧠 Agent thought: (.*?)(?=\n⚡|$)/s)?.[1]?.trim() || '';
-    const action = roundContent.match(/⚡ Agent action: (.*?)(?=\n📝|\n💻|$)/s)?.[1]?.trim() || '';
-    const content = roundContent.match(/📝 Agent content: (.*?)(?=\n💻|$)/s)?.[1]?.trim() || '';
-    const output = roundContent.match(/💻 Environment output: ([\s\S]*?)(?=\n\n=== Round|$)/s)?.[1]?.trim() || '';
+    const thought = roundContent.match(/🧠 Agent thought: ([\s\S]*?)(?=\n⚡|$)/)?.[1]?.trim() || '';
+    const action = roundContent.match(/⚡ Agent action: ([\s\S]*?)(?=\n📝|\n💻|$)/)?.[1]?.trim() || '';
+    const content = roundContent.match(/📝 Agent content: ([\s\S]*?)(?=\n💻|$)/)?.[1]?.trim() || '';
+    const output = roundContent.match(/💻 Environment output: ([\s\S]*?)(?=\n\n=== Round|$)/)?.[1]?.trim() || '';
     
     rounds.push({
       number: roundNumber,
@@ -448,10 +490,14 @@ export const Demo: React.FC = () => {
   const [demoData, setDemoData] = useState<Round[]>([]);
   const [currentDemoInfo, setCurrentDemoInfo] = useState<DemoData | null>(null);
   const [showRequest, setShowRequest] = useState(true);
-  const [selectedAttackType, setSelectedAttackType] = useState<string>('dns_spoofing');
+  const [selectedAttackType, setSelectedAttackType] = useState<string>('kill_chain_c2');
   const [isLoading, setIsLoading] = useState(false);
   const terminalRef = useRef<HTMLDivElement>(null);
   const demoSectionRef = useRef<HTMLDivElement>(null);
+  
+  // Performance optimization hooks
+  const prefersReducedMotion = useReducedMotion();
+  const isLowPerformance = usePerformanceMode();
 
   const loadDemoData = async (attackTypeId: string) => {
     setIsLoading(true);
@@ -467,13 +513,25 @@ export const Demo: React.FC = () => {
       let demoItem: DemoData;
       
       if (Array.isArray(data)) {
-        // If it's an array, find the demo based on attack_type or use index
-        if (attackTypeId === 'end_to_end_kill_chain') {
-          // Look for the demo with attack_type "End-to-End Kill Chain"
-          demoItem = data.find(item => item.attack_type === 'End-to-End Kill Chain') || data[1] || data[0];
-        } else if (attackTypeId === 'dns_spoofing') {
-          // For DNS spoofing, use the first demo (without attack_type field)
-          demoItem = data.find(item => !item.attack_type) || data[0];
+        // If it's an array, find the demo based on attack_type and specific criteria
+        if (attackTypeId === 'kill_chain_c2') {
+          // Look for the first End-to-End Kill Chain demo (C2 Channel version)
+          demoItem = data.find(item => item.attack_type === 'End-to-End Kill Chain' && item.user_request && item.user_request.includes('c2_handler.sh')) || data[0];
+        } else if (attackTypeId === 'kill_chain_advanced') {
+          // Look for the advanced End-to-End Kill Chain demo (setuid version)
+          demoItem = data.find(item => item.attack_type === 'End-to-End Kill Chain' && item.user_request && item.user_request.includes('/sbin/init')) || data[1];
+        } else if (attackTypeId === 'kill_chain_credential') {
+          // Look for the credential harvesting End-to-End Kill Chain demo (Gemini version)
+          demoItem = data.find(item => item.attack_type === 'End-to-End Kill Chain' && item.cua_framework === 'Gemini CLI') || data.find(item => item.model === 'Gemini 2.5-Pro') || data[5];
+        } else if (attackTypeId === 'traffic_hijacking') {
+          // Look for Traffic Hijacking demo
+          demoItem = data.find(item => item.attack_type === 'Traffic Hijacking') || data[2];
+        } else if (attackTypeId === 'installer_packages') {
+          // Look for Installer Packages demo
+          demoItem = data.find(item => item.attack_type === 'Installer Packages') || data[3];
+        } else if (attackTypeId === 'udev_rules') {
+          // Look for Udev Rules demo
+          demoItem = data.find(item => item.attack_type === 'Udev Rules') || data[4];
         } else {
           // Default to first item
           demoItem = data[0];
@@ -565,21 +623,28 @@ export const Demo: React.FC = () => {
       </WarningText>
       
       <AttackTypeSelector>
-        {attackTypes.map((attackType) => (
-          <AttackTypeButton
-            key={attackType.id}
-            active={selectedAttackType === attackType.id}
-            onClick={() => setSelectedAttackType(attackType.id)}
-            disabled={isLoading}
-          >
-            <span className="attack-icon">{attackType.icon}</span>
-            <div className="attack-info">
-              <div className="attack-name">{attackType.name}</div>
-              <div className="attack-description">
-                {attackType.description}
-              </div>
-            </div>
-          </AttackTypeButton>
+        {attackTypeGroups.map((group) => (
+          <AttackGroup key={group.title}>
+            <GroupTitle>{group.title}</GroupTitle>
+            <GroupButtons>
+              {group.types.map((attackType) => (
+                <AttackTypeButton
+                  key={attackType.id}
+                  active={selectedAttackType === attackType.id}
+                  onClick={() => setSelectedAttackType(attackType.id)}
+                  disabled={isLoading}
+                >
+                  <span className="attack-icon">{attackType.icon}</span>
+                  <div className="attack-info">
+                    <div className="attack-name">{attackType.name}</div>
+                    <div className="attack-description">
+                      {attackType.description}
+                    </div>
+                  </div>
+                </AttackTypeButton>
+              ))}
+            </GroupButtons>
+          </AttackGroup>
         ))}
       </AttackTypeSelector>
       
@@ -620,16 +685,21 @@ export const Demo: React.FC = () => {
             <ControlButton 
               onClick={handlePrevious} 
               disabled={showRequest && currentRound === 0}
+              {...buttonHover}
             >
               <span>⏮️</span> Previous
             </ControlButton>
             <ControlButton 
               onClick={handleNext} 
               disabled={!showRequest && currentRound === demoData.length - 1}
+              {...buttonHover}
             >
               <span>⏭️</span> Next
             </ControlButton>
-            <ControlButton onClick={handleReset}>
+            <ControlButton 
+              onClick={handleReset}
+              {...buttonHover}
+            >
               <span>🔄</span> Reset
             </ControlButton>
           </ControlButtons>
@@ -645,12 +715,13 @@ export const Demo: React.FC = () => {
               ) : showRequest && currentDemoInfo?.user_request ? (
                 <AttackerRequest
                   key="attacker-request"
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.9 }}
-                  transition={{ 
-                    duration: 0.6,
-                    ease: "easeInOut"
+                  variants={prefersReducedMotion ? undefined : fadeInScale}
+                  initial={prefersReducedMotion ? undefined : "initial"}
+                  animate={prefersReducedMotion ? undefined : "animate"}
+                  exit={prefersReducedMotion ? undefined : "exit"}
+                  transition={prefersReducedMotion ? undefined : { 
+                    duration: isLowPerformance ? animationConfig.durations.fast : animationConfig.durations.normal,
+                    ease: animationConfig.easing.smooth
                   }}
                 >
                   <RequestContent>{currentDemoInfo.user_request}</RequestContent>
@@ -658,13 +729,11 @@ export const Demo: React.FC = () => {
               ) : demoData.length > 0 && !showRequest ? (
                 <RoundContainer
                   key={`round-${currentRound}`}
-                  initial={{ opacity: 0, y: 50, scale: 0.95 }}
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                  exit={{ opacity: 0, y: -50, scale: 0.95 }}
-                  transition={{ 
-                    duration: 0.8,
-                    ease: "easeInOut"
-                  }}
+                  variants={prefersReducedMotion ? undefined : terminalAnimations.roundContainer}
+                  initial={prefersReducedMotion ? undefined : "initial"}
+                  animate={prefersReducedMotion ? undefined : "animate"}
+                  exit={prefersReducedMotion ? undefined : "exit"}
+                  transition={prefersReducedMotion ? undefined : terminalTransitions.roundContainer}
                 >
                   <RoundHeader
                     initial={{ opacity: 0 }}
@@ -675,35 +744,28 @@ export const Demo: React.FC = () => {
                   </RoundHeader>
                   
                   <ThoughtBlock
-                    initial={{ opacity: 0, x: -50 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ 
-                      delay: 0.4, 
-                      duration: 0.6,
-                      type: "spring",
-                      stiffness: 100
-                    }}
+                    variants={terminalAnimations.thoughtBlock}
+                    initial="initial"
+                    animate="animate"
+                    transition={terminalTransitions.thoughtBlock}
                   >
                     <strong>🧠 Agent thought:</strong> {demoData[currentRound].thought}
                   </ThoughtBlock>
                   
                   <ActionBlock
-                    initial={{ opacity: 0, x: -50 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ 
-                      delay: 0.8, 
-                      duration: 0.6,
-                      type: "spring",
-                      stiffness: 100
-                    }}
+                    variants={terminalAnimations.actionBlock}
+                    initial="initial"
+                    animate="animate"
+                    transition={terminalTransitions.actionBlock}
                   >
                     <strong>⚡ Agent action:</strong> {demoData[currentRound].action}
                     {demoData[currentRound].content && demoData[currentRound].content !== 'None' && (
-                      <motion.div 
+                        <motion.div 
                         style={{ marginTop: '0.5rem' }}
-                        initial={{ opacity: 0, height: 0 }}
-                        animate={{ opacity: 1, height: 'auto' }}
-                        transition={{ delay: 1.2, duration: 0.5 }}
+                        variants={terminalAnimations.contentReveal}
+                        initial="initial"
+                        animate="animate"
+                        transition={terminalTransitions.contentReveal}
                       >
                         <strong>📝 Content:</strong>
                         <SyntaxHighlighter 
@@ -723,14 +785,10 @@ export const Demo: React.FC = () => {
                   </ActionBlock>
                   
                   <OutputBlock
-                    initial={{ opacity: 0, x: -50 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ 
-                      delay: 1.6, 
-                      duration: 0.6,
-                      type: "spring",
-                      stiffness: 100
-                    }}
+                    variants={terminalAnimations.outputBlock}
+                    initial="initial"
+                    animate="animate"
+                    transition={terminalTransitions.outputBlock}
                   >
                     <strong>💻 Environment output:</strong>
                     <motion.pre 
@@ -752,7 +810,7 @@ export const Demo: React.FC = () => {
           <ProgressFill
             initial={{ width: '0%' }}
             animate={{ width: `${progress}%` }}
-            transition={{ duration: 0.3 }}
+            transition={{ duration: animationConfig.durations.fast }}
           />
         </ProgressBar>
       </DemoContainer>

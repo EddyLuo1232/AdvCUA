@@ -1,6 +1,13 @@
 import React from 'react';
 import styled from 'styled-components';
 import { motion } from 'framer-motion';
+import { 
+  fadeInUp, 
+  animationConfig, 
+  staggerContainer, 
+  cssAnimations, 
+  animationProps 
+} from '../styles/animations';
 
 const HeroSection = styled.section`
   min-height: 100vh;
@@ -113,20 +120,10 @@ const PrimaryButton = styled(Button)`
   }
   
   span {
-    animation: bounce 2s infinite;
+    animation: ${animationProps.iconBounce};
   }
   
-  @keyframes bounce {
-    0%, 20%, 50%, 80%, 100% {
-      transform: translateY(0);
-    }
-    40% {
-      transform: translateY(-3px);
-    }
-    60% {
-      transform: translateY(-1px);
-    }
-  }
+  ${cssAnimations.bounce}
 `;
 
 const SecondaryButton = styled(Button)`
@@ -150,23 +147,16 @@ const SecondaryButton = styled(Button)`
   
   &:nth-child(2) span {
     color: #fbbf24;
-    animation: pageFlip 3s ease-in-out infinite;
+    animation: ${animationProps.pageFlip};
   }
   
   &:nth-child(3) span {
     color: #34d399;
-    animation: dataFlow 2.5s linear infinite;
+    animation: ${animationProps.dataFlow};
   }
   
-  @keyframes pageFlip {
-    0%, 100% { transform: rotateY(0deg); }
-    50% { transform: rotateY(180deg); }
-  }
-  
-  @keyframes dataFlow {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.1); }
-  }
+  ${cssAnimations.pageFlip}
+  ${cssAnimations.dataFlow}
 `;
 
 const Stats = styled(motion.div)`
@@ -200,29 +190,23 @@ const Background = styled.div`
   right: 0;
   bottom: 0;
   z-index: 1;
-  opacity: 0.5;
+  opacity: 0.3;  /* Reduced opacity for less distraction */
+  will-change: transform;  /* Hardware acceleration */
   
   &::before {
     content: '';
     position: absolute;
-    top: -50%;
-    left: -50%;
-    width: 200%;
-    height: 200%;
-    background: radial-gradient(circle at 20% 80%, rgba(96, 165, 250, 0.1) 0%, transparent 50%),
-                radial-gradient(circle at 80% 20%, rgba(167, 139, 250, 0.1) 0%, transparent 50%),
-                radial-gradient(circle at 40% 40%, rgba(244, 114, 182, 0.1) 0%, transparent 50%);
-    animation: rotate 30s linear infinite;
+    top: -25%;    /* Reduced area for better performance */
+    left: -25%;
+    width: 150%; /* Reduced size */
+    height: 150%;
+    background: radial-gradient(circle at 20% 80%, rgba(96, 165, 250, 0.05) 0%, transparent 40%),
+                radial-gradient(circle at 80% 20%, rgba(167, 139, 250, 0.05) 0%, transparent 40%);
+    animation: ${animationProps.backgroundRotate};
+    transform: translateZ(0);  /* Force GPU layer */
   }
   
-  @keyframes rotate {
-    from {
-      transform: rotate(0deg);
-    }
-    to {
-      transform: rotate(360deg);
-    }
-  }
+  ${cssAnimations.rotate}
 `;
 
 export const Hero: React.FC = () => {
@@ -246,9 +230,13 @@ export const Hero: React.FC = () => {
         </Title>
         
         <AuthorInfo
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.2 }}
+          variants={fadeInUp}
+          initial="initial"
+          animate="animate"
+          transition={{ 
+            duration: animationConfig.durations.normal, 
+            delay: 0.2 
+          }}
         >
           <AuthorName>Weidi Luo</AuthorName><sup>1</sup>, <AuthorName>Qiming Zhang</AuthorName><sup>2</sup>, <AuthorName>Tianyu Lu</AuthorName><sup>2</sup>, <AuthorName>Xiaogeng Liu</AuthorName><sup>3</sup>, <AuthorName>Bin Hu</AuthorName><sup>4</sup>, <AuthorName>Hung-Chun CHIU</AuthorName><sup>5</sup><br />
           <AuthorName>Siyuan Ma</AuthorName><sup>6</sup>, <AuthorName>Yizhe Zhang</AuthorName><sup>7</sup>, <AuthorName>Xusheng Xiao</AuthorName><sup>8</sup>, <AuthorName>Yinzhi Cao</AuthorName><sup>3</sup>, <AuthorName>Zhen Xiang</AuthorName><sup>1</sup>, <AuthorName>Chaowei Xiao</AuthorName><sup>3</sup><br /><br />
@@ -258,9 +246,9 @@ export const Hero: React.FC = () => {
         </AuthorInfo>
         
         <ButtonGroup
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.4 }}
+          variants={staggerContainer}
+          initial="initial"
+          animate="animate"
         >
           <PrimaryButton as="button" onClick={() => scrollToSection('demo')}>
             <span>🎮</span> View Demo
@@ -274,9 +262,13 @@ export const Hero: React.FC = () => {
         </ButtonGroup>
         
         <Stats
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.6 }}
+          variants={fadeInUp}
+          initial="initial"
+          animate="animate"
+          transition={{ 
+            duration: animationConfig.durations.normal, 
+            delay: 0.6 
+          }}
         >
           <Stat>
             <StatNumber>10</StatNumber>
@@ -287,7 +279,7 @@ export const Hero: React.FC = () => {
             <StatLabel>Techniques</StatLabel>
           </Stat>
           <Stat>
-            <StatNumber>120</StatNumber>
+            <StatNumber>140</StatNumber>
             <StatLabel>Tasks</StatLabel>
           </Stat>
         </Stats>

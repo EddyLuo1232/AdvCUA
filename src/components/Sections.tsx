@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import { motion } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
 import MathJax from './MathJax';
+import { fadeInUp, animationConfig } from '../styles/animations';
 
 const Section = styled.section`
   padding: 4rem 2rem;
@@ -98,16 +99,21 @@ const AnimatedSection: React.FC<SectionProps> = ({ id, title, children }) => {
   return (
     <Section id={id} ref={ref}>
       <SectionTitle
-        initial={{ opacity: 0, y: 20 }}
-        animate={inView ? { opacity: 1, y: 0 } : {}}
-        transition={{ duration: 0.6 }}
+        variants={fadeInUp}
+        initial="initial"
+        animate={inView ? "animate" : "initial"}
+        transition={{ duration: animationConfig.durations.normal }}
       >
         {title}
       </SectionTitle>
       <SectionContent
-        initial={{ opacity: 0, y: 20 }}
-        animate={inView ? { opacity: 1, y: 0 } : {}}
-        transition={{ duration: 0.6, delay: 0.2 }}
+        variants={fadeInUp}
+        initial="initial"
+        animate={inView ? "animate" : "initial"}
+        transition={{ 
+          duration: animationConfig.durations.normal, 
+          delay: 0.2 
+        }}
       >
         {children || (
           <Placeholder>
