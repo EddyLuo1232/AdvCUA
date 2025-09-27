@@ -7,13 +7,12 @@ import {
   fadeInScale, 
   terminalAnimations, 
   terminalTransitions,
-  progressBar, 
   animationConfig,
   buttonHover,
   cssAnimations,
   animationProps
 } from '../styles/animations';
-import { useReducedMotion, usePerformanceMode } from '../hooks/useReducedMotion';
+// Performance hooks removed as they're not currently implemented in the UI
 
 const DemoSection = styled.section`
   padding: 4rem 2rem;
@@ -495,9 +494,7 @@ export const Demo: React.FC = () => {
   const terminalRef = useRef<HTMLDivElement>(null);
   const demoSectionRef = useRef<HTMLDivElement>(null);
   
-  // Performance optimization hooks
-  const prefersReducedMotion = useReducedMotion();
-  const isLowPerformance = usePerformanceMode();
+  // Performance optimization hooks removed for now
 
   const loadDemoData = async (attackTypeId: string) => {
     setIsLoading(true);
@@ -715,12 +712,12 @@ export const Demo: React.FC = () => {
               ) : showRequest && currentDemoInfo?.user_request ? (
                 <AttackerRequest
                   key="attacker-request"
-                  variants={prefersReducedMotion ? undefined : fadeInScale}
-                  initial={prefersReducedMotion ? undefined : "initial"}
-                  animate={prefersReducedMotion ? undefined : "animate"}
-                  exit={prefersReducedMotion ? undefined : "exit"}
-                  transition={prefersReducedMotion ? undefined : { 
-                    duration: isLowPerformance ? animationConfig.durations.fast : animationConfig.durations.normal,
+                  variants={fadeInScale}
+                  initial="initial"
+                  animate="animate"
+                  exit="exit"
+                  transition={{ 
+                    duration: animationConfig.durations.normal,
                     ease: animationConfig.easing.smooth
                   }}
                 >
@@ -729,11 +726,11 @@ export const Demo: React.FC = () => {
               ) : demoData.length > 0 && !showRequest ? (
                 <RoundContainer
                   key={`round-${currentRound}`}
-                  variants={prefersReducedMotion ? undefined : terminalAnimations.roundContainer}
-                  initial={prefersReducedMotion ? undefined : "initial"}
-                  animate={prefersReducedMotion ? undefined : "animate"}
-                  exit={prefersReducedMotion ? undefined : "exit"}
-                  transition={prefersReducedMotion ? undefined : terminalTransitions.roundContainer}
+                  variants={terminalAnimations.roundContainer}
+                  initial="initial"
+                  animate="animate"
+                  exit="exit"
+                  transition={terminalTransitions.roundContainer}
                 >
                   <RoundHeader
                     initial={{ opacity: 0 }}
