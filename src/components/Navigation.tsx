@@ -230,6 +230,7 @@ export const Navigation: React.FC = () => {
         </Logo>
         
         <NavLinks>
+          <NavLink onClick={() => scrollToSection('threat-model')}>Threat Model</NavLink>
           <NavLink onClick={() => scrollToSection('demo')}>Demo</NavLink>
           <NavLink onClick={() => scrollToSection('abstract')}>Abstract</NavLink>
           <NavLink onClick={() => scrollToSection('dataset')}>Dataset</NavLink>
