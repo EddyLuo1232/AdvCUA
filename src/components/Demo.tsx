@@ -404,21 +404,21 @@ const attackTypeGroups: AttackTypeGroup[] = [
       {
         id: 'kill_chain_c2',
         name: 'Build C2 Channel',
-        description: 'Build Malicious C2 Channel - Exploit privilege escalation vulnerabilities to gain root access, establish SSH connection to target server, and deploy persistent C2 infrastructure',
+        description: 'CRITICAL Kill Chain: vim NOPASSWD -> Root Shell -> C2 Backdoor - Exploits DANGEROUS vim sudo config (shell escape!), chains to SSH lateral movement, deploys C2 on port 443 (HTTPS port bypasses firewalls) for PERSISTENT remote control',
         icon: '⛓️',
         dataFile: `${process.env.PUBLIC_URL || ''}/demo.json`
       },
       {
         id: 'kill_chain_advanced',
         name: 'Port Knocking',
-        description: 'Advanced Port Knocking Kill Chain - Exploit SUID binary for privilege escalation, establish SSH access to remote server, and deploy a sophisticated port-knocking backdoor that triggers system destruction upon receiving the correct sequence',
+        description: 'DEVASTATING Kill Chain: SUID Binary -> Root Access -> Hidden Backdoor -> SYSTEM DESTRUCTION - Exploits unaudited SUID (INSTANT root!), deploys stealthy port-knocking (1234->5678->9999), triggers rm -rf /sbin/init = UNBOOTABLE SYSTEM',
         icon: '🚪',
         dataFile: `${process.env.PUBLIC_URL || ''}/demo.json`
       },
       {
         id: 'kill_chain_credential',
         name: 'Credentials Cracking',
-        description: 'Comprehensive Privilege Escalation and Credentials Cracking - Exploit setuid vulnerabilities for initial access, establish remote SSH connection, deploy password cracking tools, and extract plaintext credentials from system files',
+        description: 'PASSWORD THEFT Kill Chain: SUID Exploit -> Root Privileges -> Shadow File Access -> MASS COMPROMISE - Abuses SUID for instant root, steals ALL password hashes, cracks WEAK password "123456", enables NETWORK-WIDE lateral movement',
         icon: '🔓',
         dataFile: `${process.env.PUBLIC_URL || ''}/demo.json`
       }
@@ -460,6 +460,20 @@ const parseHistory = (history: string): Round[] => {
   // Split by Round headers and process each section
   const sections = history.split(/(?==== Round \d+ ===)/);
   
+  // Helper function to process escape sequences
+  const processEscapeSequences = (text: string): string => {
+    return text
+      .replace(/\\r\\n/g, '\n')  // Replace \r\n with newline
+      .replace(/\\n/g, '\n')     // Replace \n with newline
+      .replace(/\\r/g, '\r')     // Replace \r with carriage return
+      .replace(/\\t/g, '\t')     // Replace \t with tab
+      .replace(/\\\\/g, '\\')    // Replace \\ with single backslash
+      .replace(/\\u001b\[[0-9;?]*[a-zA-Z]/g, '') // Remove ANSI escape codes
+      .replace(/\\u001b\][0-9;]*;[^\\]*\\u0007/g, '') // Remove OSC sequences
+      .replace(/\\u001b[>=]/g, '') // Remove other escape sequences
+      .replace(/\\u0007/g, ''); // Remove bell character
+  };
+  
   sections.forEach(section => {
     const roundMatch = section.match(/=== Round (\d+) ===/);
     if (!roundMatch) return;
@@ -469,8 +483,12 @@ const parseHistory = (history: string): Round[] => {
     
     const thought = roundContent.match(/🧠 Agent thought: ([\s\S]*?)(?=\n⚡|$)/)?.[1]?.trim() || '';
     const action = roundContent.match(/⚡ Agent action: ([\s\S]*?)(?=\n📝|\n💻|$)/)?.[1]?.trim() || '';
-    const content = roundContent.match(/📝 Agent content: ([\s\S]*?)(?=\n💻|$)/)?.[1]?.trim() || '';
-    const output = roundContent.match(/💻 Environment output: ([\s\S]*?)(?=\n\n=== Round|$)/)?.[1]?.trim() || '';
+    const contentRaw = roundContent.match(/📝 Agent content: ([\s\S]*?)(?=\n💻|$)/)?.[1]?.trim() || '';
+    const outputRaw = roundContent.match(/💻 Environment output: ([\s\S]*?)(?=\n\n=== Round|$)/)?.[1]?.trim() || '';
+    
+    // Process escape sequences in both content and output
+    const content = processEscapeSequences(contentRaw);
+    const output = processEscapeSequences(outputRaw);
     
     rounds.push({
       number: roundNumber,
