@@ -64,10 +64,13 @@ const AttackTypeSelector = styled.div`
   }
 `;
 
-const AttackGroup = styled.div`
+const AttackGroup = styled.div<{ fullWidth?: boolean }>`
   display: flex;
   flex-direction: column;
   gap: 1rem;
+  ${props => props.fullWidth && `
+    grid-column: 1 / -1;
+  `}
 `;
 
 const GroupTitle = styled.h3`
@@ -80,10 +83,15 @@ const GroupTitle = styled.h3`
   padding-bottom: 0.5rem;
 `;
 
-const GroupButtons = styled.div`
+const GroupButtons = styled.div<{ centered?: boolean }>`
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
+  ${props => props.centered && `
+    align-items: center;
+    max-width: 600px;
+    margin: 0 auto;
+  `}
 `;
 
 const AttackTypeButton = styled.button<{ active: boolean }>`
@@ -449,6 +457,18 @@ const attackTypeGroups: AttackTypeGroup[] = [
         dataFile: `${process.env.PUBLIC_URL || ''}/demo.json`
       }
     ]
+  },
+  {
+    title: "Apparent Demo",
+    types: [
+      {
+        id: 'apparent_cve_exploit',
+        name: 'CVE Exploitation Threat',
+        description: 'CRITICAL THREAT: Attackers Using Cursor to Generate CVE Exploits - This demonstrates how attackers can leverage Cursor AI to automatically identify system vulnerabilities (Ubuntu 20.04, sudo 1.8.27) and generate working exploitation code for CVE-2021-3156 (Baron Samedit) and CVE-2019-14287. The AI provides complete attack chains including privilege escalation, lateral movement via SSH, and destructive payload deployment. This proves CUA can enable sophisticated attacks by non-technical adversaries.',
+        icon: '⚠️',
+        dataFile: `${process.env.PUBLIC_URL || ''}/demo.json`
+      }
+    ]
   }
 ];
 
@@ -547,6 +567,9 @@ export const Demo: React.FC = () => {
         } else if (attackTypeId === 'udev_rules') {
           // Look for Udev Rules demo
           demoItem = data.find(item => item.attack_type === 'Udev Rules') || data[4];
+        } else if (attackTypeId === 'apparent_cve_exploit') {
+          // Look for Apparent Demo
+          demoItem = data.find(item => item.attack_type === 'Apparent Demo') || data[6];
         } else {
           // Default to first item
           demoItem = data[0];
@@ -639,9 +662,9 @@ export const Demo: React.FC = () => {
       
       <AttackTypeSelector>
         {attackTypeGroups.map((group) => (
-          <AttackGroup key={group.title}>
+          <AttackGroup key={group.title} fullWidth={group.title === "Apparent Demo"}>
             <GroupTitle>{group.title}</GroupTitle>
-            <GroupButtons>
+            <GroupButtons centered={group.title === "Apparent Demo"}>
               {group.types.map((attackType) => (
                 <AttackTypeButton
                   key={attackType.id}
