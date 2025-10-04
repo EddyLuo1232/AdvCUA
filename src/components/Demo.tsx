@@ -607,11 +607,16 @@ export const Demo: React.FC = () => {
   }, [selectedAttackType]);
 
   useEffect(() => {
-    // Auto-scroll terminal to bottom
+    // Auto-scroll terminal to top for new rounds
     if (terminalRef.current) {
-      terminalRef.current.scrollTop = terminalRef.current.scrollHeight;
+      // Small delay to ensure content is rendered
+      setTimeout(() => {
+        if (terminalRef.current) {
+          terminalRef.current.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+      }, 100);
     }
-  }, [currentRound]);
+  }, [currentRound, showRequest]);
 
   const handlePrevious = () => {
     if (showRequest) {
