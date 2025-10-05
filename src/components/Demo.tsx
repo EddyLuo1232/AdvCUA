@@ -175,60 +175,248 @@ const DemoContainer = styled.div`
   position: relative;
   overflow: hidden;
   will-change: transform;  /* Optimize transforms */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.08);
+  transition: box-shadow ${props => props.theme.transitions.fast};
+  
+  &:hover {
+    box-shadow: 0 8px 12px rgba(0, 0, 0, 0.08), 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  @media (max-width: 768px) {
+    padding: 1.5rem;
+  }
+  
+  @media (max-width: 480px) {
+    padding: 1rem;
+    border-radius: ${props => props.theme.borderRadius.md};
+  }
 `;
 
 const DemoHeader = styled.div`
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
-  margin-bottom: 2rem;
-  padding-bottom: 1rem;
-  border-bottom: 1px solid ${props => props.theme.colors.border};
+  margin-bottom: 1rem;
+  padding: 0.5rem 0;
 `;
 
-const DemoInfo = styled.div`
+const DemoTitle = styled.div`
   display: flex;
-  gap: 2rem;
   align-items: center;
+  gap: 1rem;
+  
+  h3 {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: ${props => props.theme.colors.text};
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    
+    span {
+      font-size: 1.8rem;
+    }
+  }
+  
+  @media (max-width: 768px) {
+    h3 {
+      font-size: 1.25rem;
+    }
+  }
 `;
 
-const InfoItem = styled.div`
+const DemoMeta = styled.div`
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  margin-bottom: 1rem;
+  
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+  
+  @media (max-width: 1024px) and (min-width: 769px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+`;
+
+const MetaItem = styled.div<{ $accent?: string }>`
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
+  gap: 0.5rem;
+  padding: 1rem;
+  background-color: ${props => props.theme.colors.surfaceLight};
+  border-radius: ${props => props.theme.borderRadius.md};
+  border: 1px solid ${props => props.theme.colors.border};
+  transition: all ${props => props.theme.transitions.fast};
+  position: relative;
+  overflow: hidden;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background-color: ${props => props.$accent || props.theme.colors.primary};
+  }
+  
+  &:hover {
+    border-color: ${props => props.$accent || props.theme.colors.primary};
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
 `;
 
-const InfoLabel = styled.span`
+const MetaLabel = styled.div`
   color: ${props => props.theme.colors.textSecondary};
-  font-size: 0.875rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.25rem;
 `;
 
-const InfoValue = styled.span`
+const MetaValue = styled.div`
   color: ${props => props.theme.colors.text};
   font-weight: 600;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  line-height: 1.4;
+  
+  @media (max-width: 480px) {
+    font-size: 0.9rem;
+  }
+`;
+
+const ProgressBar = styled.div<{ progress: number }>`
+  width: 100%;
+  height: 6px;
+  background-color: ${props => props.theme.colors.surfaceLight};
+  border-radius: 3px;
+  overflow: hidden;
+  margin-bottom: 2rem;
+  border: 1px solid ${props => props.theme.colors.border};
+  
+  &::after {
+    content: '';
+    display: block;
+    height: 100%;
+    background: linear-gradient(90deg, ${props => props.theme.colors.primary}, ${props => props.theme.colors.secondary});
+    width: ${props => props.progress}%;
+    transition: width 0.3s ease;
+  }
+`;
+
+const StepInfo = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  color: ${props => props.theme.colors.textSecondary};
+  font-size: 0.875rem;
+  
+  @media (max-width: 768px) {
+    justify-content: center;
+  }
+`;
+
+const ButtonText = styled.span`
+  @media (max-width: 480px) {
+    display: none;
+  }
+`;
+
+const StatusValue = styled.span<{ status: 'request' | 'progress' | 'completed' }>`
+  color: ${props => 
+    props.status === 'completed' ? '#10b981' : 
+    props.status === 'request' ? '#3b82f6' : 
+    '#f59e0b'
+  };
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  
+  &::before {
+    content: '';
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: currentColor;
+    margin-right: 0.5rem;
+    animation: ${props => props.status !== 'completed' ? 'pulse 2s infinite' : 'none'};
+  }
+  
+  @keyframes pulse {
+    0%, 100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.5;
+    }
+  }
+`;
+
+const ControlBar = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid ${props => props.theme.colors.border};
+  
+  @media (max-width: 768px) {
+    flex-direction: column;
+    gap: 1rem;
+  }
 `;
 
 const ControlButtons = styled.div`
   display: flex;
-  gap: 1rem;
+  gap: 0.5rem;
+  
+  @media (max-width: 480px) {
+    justify-content: center;
+    width: 100%;
+  }
 `;
 
 const ControlButton = styled(motion.button)`
-  padding: 0.5rem 1rem;
+  padding: 0.75rem 1.5rem;
   background-color: ${props => props.theme.colors.surfaceLight};
   border: 1px solid ${props => props.theme.colors.border};
   border-radius: ${props => props.theme.borderRadius.md};
   color: ${props => props.theme.colors.text};
   font-size: 0.875rem;
+  font-weight: 500;
   cursor: pointer;
   transition: all ${props => props.theme.transitions.fast};
   display: flex;
   align-items: center;
   gap: 0.5rem;
-
-  &:hover {
+  white-space: nowrap;
+  
+  &:hover:not(:disabled) {
     background-color: ${props => props.theme.colors.primary};
+    color: white;
     border-color: ${props => props.theme.colors.primary};
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 118, 255, 0.3);
+  }
+  
+  @media (max-width: 480px) {
+    padding: 0.5rem 1rem;
+    font-size: 0.8rem;
+    gap: 0.25rem;
+    
+    span {
+      font-size: 1rem;
+    }
   }
 
   &:disabled {
@@ -243,11 +431,43 @@ const Terminal = styled.div`
   padding: 2rem;
   font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
   font-size: 0.875rem;
-  min-height: 400px;
+  height: 500px;
+  max-height: 70vh;
   overflow-y: auto;
   position: relative;
   will-change: scroll-position;  /* Optimize scrolling */
   transform: translateZ(0);       /* Force hardware acceleration */
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
+  
+  /* Custom scrollbar */
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+  
+  &::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 4px;
+  }
+  
+  &::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+    
+    &:hover {
+      background: rgba(255, 255, 255, 0.3);
+    }
+  }
+  
+  @media (max-width: 768px) {
+    padding: 1.5rem;
+    height: 400px;
+    font-size: 0.8rem;
+  }
+  
+  @media (max-width: 480px) {
+    padding: 1rem;
+    height: 350px;
+  }
 `;
 
 const TerminalContent = styled.div`
@@ -294,19 +514,6 @@ const OutputBlock = styled(motion.div)`
   overflow-y: auto;
 `;
 
-const ProgressBar = styled.div`
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 4px;
-  background-color: ${props => props.theme.colors.surface};
-`;
-
-const ProgressFill = styled(motion.div)`
-  height: 100%;
-  background: linear-gradient(90deg, #60a5fa 0%, #a78bfa 100%);
-`;
 
 const LoadingIndicator = styled.div`
   display: flex;
@@ -650,9 +857,6 @@ export const Demo: React.FC = () => {
     }
   };
 
-  const progress = demoData.length > 0 ? 
-    (showRequest ? 0 : ((currentRound + 1) / demoData.length) * 100) : 0;
-  
   const currentAttackType = attackTypes.find(type => type.id === selectedAttackType);
 
   return (
@@ -693,60 +897,38 @@ export const Demo: React.FC = () => {
       
       <DemoContainer>
         <DemoHeader>
-          <DemoInfo>
-            <InfoItem>
-              <InfoLabel>Attack Type</InfoLabel>
-              <InfoValue>
-                {currentAttackType?.icon} {currentAttackType?.name || 'Loading...'}
-              </InfoValue>
-            </InfoItem>
-            <InfoItem>
-              <InfoLabel>CUA Framework</InfoLabel>
-              <InfoValue>
-                {currentDemoInfo?.cua_framework || 'Loading...'}
-              </InfoValue>
-            </InfoItem>
-            <InfoItem>
-              <InfoLabel>Model</InfoLabel>
-              <InfoValue>
-                {currentDemoInfo?.model || 'Loading...'}
-              </InfoValue>
-            </InfoItem>
-            <InfoItem>
-              <InfoLabel>Steps</InfoLabel>
-              <InfoValue>{currentRound + 1} / {demoData.length}</InfoValue>
-            </InfoItem>
-            <InfoItem>
-              <InfoLabel>Status</InfoLabel>
-              <InfoValue style={{ color: !showRequest && currentRound === demoData.length - 1 ? '#10b981' : '#f59e0b' }}>
-                {showRequest ? 'Request' : currentRound === demoData.length - 1 ? 'Completed' : `Round ${currentRound + 1}`}
-              </InfoValue>
-            </InfoItem>
-          </DemoInfo>
-          
-          <ControlButtons>
-            <ControlButton 
-              onClick={handlePrevious} 
-              disabled={showRequest && currentRound === 0}
-              {...buttonHover}
-            >
-              <span>⏮️</span> Previous
-            </ControlButton>
-            <ControlButton 
-              onClick={handleNext} 
-              disabled={!showRequest && currentRound === demoData.length - 1}
-              {...buttonHover}
-            >
-              <span>⏭️</span> Next
-            </ControlButton>
-            <ControlButton 
-              onClick={handleReset}
-              {...buttonHover}
-            >
-              <span>🔄</span> Reset
-            </ControlButton>
-          </ControlButtons>
+          <DemoTitle>
+            <h3>
+              <span>{currentAttackType?.icon}</span>
+              {currentAttackType?.name || 'Loading...'}
+            </h3>
+          </DemoTitle>
         </DemoHeader>
+        
+        <DemoMeta>
+          <MetaItem $accent="#6366f1">
+            <MetaLabel>🔧 CUA Framework</MetaLabel>
+            <MetaValue>{currentDemoInfo?.cua_framework || 'Loading...'}</MetaValue>
+          </MetaItem>
+          
+          <MetaItem $accent="#8b5cf6">
+            <MetaLabel>🤖 AI Model</MetaLabel>
+            <MetaValue>{currentDemoInfo?.model || 'Loading...'}</MetaValue>
+          </MetaItem>
+          
+          <MetaItem $accent="#ec4899">
+            <MetaLabel>📊 Status</MetaLabel>
+            <MetaValue>
+              <StatusValue 
+                status={showRequest ? 'request' : currentRound === demoData.length - 1 ? 'completed' : 'progress'}
+              >
+                {showRequest ? 'Request' : currentRound === demoData.length - 1 ? 'Completed' : `Round ${currentRound + 1}`}
+              </StatusValue>
+            </MetaValue>
+          </MetaItem>
+        </DemoMeta>
+        
+        <ProgressBar progress={(currentRound + 1) / demoData.length * 100} />
         
         <Terminal ref={terminalRef}>
           <TerminalContent>
@@ -849,13 +1031,34 @@ export const Demo: React.FC = () => {
           </TerminalContent>
         </Terminal>
         
-        <ProgressBar>
-          <ProgressFill
-            initial={{ width: '0%' }}
-            animate={{ width: `${progress}%` }}
-            transition={{ duration: animationConfig.durations.fast }}
-          />
-        </ProgressBar>
+        <ControlBar>
+          <StepInfo>
+            Step {currentRound + 1} of {demoData.length}
+          </StepInfo>
+          
+          <ControlButtons>
+            <ControlButton 
+              onClick={handlePrevious} 
+              disabled={showRequest && currentRound === 0}
+              {...buttonHover}
+            >
+              <span>⏮️</span><ButtonText> Previous</ButtonText>
+            </ControlButton>
+            <ControlButton 
+              onClick={handleNext} 
+              disabled={!showRequest && currentRound === demoData.length - 1}
+              {...buttonHover}
+            >
+              <span>⏭️</span><ButtonText> Next</ButtonText>
+            </ControlButton>
+            <ControlButton 
+              onClick={handleReset}
+              {...buttonHover}
+            >
+              <span>🔄</span><ButtonText> Reset</ButtonText>
+            </ControlButton>
+          </ControlButtons>
+        </ControlBar>
       </DemoContainer>
     </DemoSection>
   );
