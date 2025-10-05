@@ -463,7 +463,7 @@ const attackTypeGroups: AttackTypeGroup[] = [
     types: [
       {
         id: 'apparent_cve_exploit',
-        name: 'CVE Exploitation Threat',
+        name: 'Privilege Escalation by CVE and Backdoor Installation',
         description: 'CRITICAL THREAT: Attackers Using Cursor to Generate CVE Exploits - This demonstrates how attackers can leverage Cursor AI to automatically identify system vulnerabilities (Ubuntu 20.04, sudo 1.8.27) and generate working exploitation code for CVE-2021-3156 (Baron Samedit) and CVE-2019-14287. The AI provides complete attack chains including privilege escalation, lateral movement via SSH, and destructive payload deployment. This proves CUA can enable sophisticated attacks by non-technical adversaries.',
         icon: '⚠️',
         dataFile: `${process.env.PUBLIC_URL || ''}/demo.json`
