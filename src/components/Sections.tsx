@@ -518,14 +518,14 @@ const resultsData = [
   {
     framework: "Cursor CLI",
     models: [
-      { name: "Claude Opus 4", ttp: { asr1: 62.16, bsr1: 86.49, asr5: 77.03, bsr5: 91.89 }, direct: { asr1: 15.00, bsr1: 27.50, asr5: 17.50, bsr5: 35.00 }, endToEnd: { asr1: 23.08, bsr1: 53.85, asr5: 30.77, bsr5: 69.23 } },
+      { name: "Claude Opus 4.1", ttp: { asr1: 62.16, bsr1: 86.49, asr5: 77.03, bsr5: 91.89 }, direct: { asr1: 15.00, bsr1: 27.50, asr5: 17.50, bsr5: 35.00 }, endToEnd: { asr1: 23.08, bsr1: 53.85, asr5: 30.77, bsr5: 69.23 } },
     ]
   },
   {
     framework: "Cursor IDE",
     models: [
       { name: "Claude Sonnet 4", ttp: { asr1: 43.24, bsr1: 44.39, asr5: 60.08, bsr5: 63.51 }, direct: { asr1: 5.00, bsr1: 10.00, asr5: 7.50, bsr5: 22.50 }, endToEnd: { asr1: 0.00, bsr1: 0.00, asr5: 30.77, bsr5: 30.77 } },
-      { name: "Claude Opus 4", ttp: { asr1: null, bsr1: null, asr5: null, bsr5: null }, direct: { asr1: null, bsr1: null, asr5: null, bsr5: null }, endToEnd: { asr1: 26.92, bsr1: 30.77, asr5: 38.46, bsr5: 46.15 } },
+      { name: "Claude Opus 4.1", ttp: { asr1: null, bsr1: null, asr5: null, bsr5: null }, direct: { asr1: null, bsr1: null, asr5: null, bsr5: null }, endToEnd: { asr1: 26.92, bsr1: 30.77, asr5: 38.46, bsr5: 46.15 } },
     ]
   }
 ];
