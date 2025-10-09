@@ -348,7 +348,7 @@ export const Hero: React.FC = () => {
           <SecondaryButton as="a" href="https://arxiv.org/abs/2510.06607" target="_blank">
             <span>📄</span> Paper
           </SecondaryButton>
-          <SecondaryButton as="a" href="https://huggingface.co/datasets/EddyLuo/AdvCUA" target="_blank">
+          <SecondaryButton as="a" href="https://huggingface.co/datasets/DoxxingTeam/AdvCUA" target="_blank">
             <span>🤗</span> Dataset
           </SecondaryButton>
           <SecondaryButton as="a" href="https://github.com/EddyLuo1232/VRAP" target="_blank">
