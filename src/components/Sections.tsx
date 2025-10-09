@@ -10,6 +10,16 @@ const Section = styled.section`
   max-width: 1200px;
   margin: 0 auto;
   min-height: 50vh;
+  
+  @media (max-width: 768px) {
+    padding: 3rem 1rem;
+    min-height: 40vh;
+  }
+  
+  @media (max-width: 480px) {
+    padding: 2rem 0.75rem;
+    min-height: 30vh;
+  }
 `;
 
 const SectionTitle = styled(motion.h2)`
@@ -21,6 +31,16 @@ const SectionTitle = styled(motion.h2)`
   -webkit-text-fill-color: transparent;
   background-clip: text;
   text-shadow: 0 0 20px rgba(79, 195, 247, 0.2);
+  
+  @media (max-width: 768px) {
+    font-size: 2rem;
+    margin-bottom: 0.75rem;
+  }
+  
+  @media (max-width: 480px) {
+    font-size: 1.75rem;
+    margin-bottom: 0.5rem;
+  }
 `;
 
 const SectionContent = styled(motion.div)`
@@ -33,6 +53,16 @@ const SectionContent = styled(motion.div)`
   margin-top: 2rem;
   backdrop-filter: blur(10px);
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  
+  @media (max-width: 768px) {
+    padding: 1.5rem;
+    margin-top: 1.5rem;
+  }
+  
+  @media (max-width: 480px) {
+    padding: 1rem;
+    margin-top: 1rem;
+  }
 `;
 
 const Placeholder = styled.div`
@@ -50,6 +80,17 @@ const Grid = styled.div`
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 2rem;
   margin-top: 2rem;
+  
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+    margin-top: 1.5rem;
+  }
+  
+  @media (max-width: 480px) {
+    gap: 1rem;
+    margin-top: 1rem;
+  }
 `;
 
 const Card = styled(motion.div)`
@@ -142,6 +183,27 @@ const AbstractContent = styled.div`
   strong {
     color: ${props => props.theme.colors.primary};
     font-weight: 600;
+  }
+  
+  @media (max-width: 768px) {
+    font-size: 1rem;
+    line-height: 1.7;
+    padding: 1rem;
+    text-align: left;
+    
+    p {
+      margin-bottom: 1.25rem;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    font-size: 0.9rem;
+    line-height: 1.6;
+    padding: 0.75rem;
+    
+    p {
+      margin-bottom: 1rem;
+    }
   }
 `;
 
@@ -400,6 +462,15 @@ const TableWrapper = styled.div`
     background: ${props => props.theme.colors.border};
     border-radius: 4px;
   }
+  
+  @media (max-width: 768px) {
+    padding: 0.5rem;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  @media (max-width: 480px) {
+    padding: 0.25rem;
+  }
 `;
 
 const StyledTable = styled.table`
@@ -407,6 +478,16 @@ const StyledTable = styled.table`
   border-collapse: collapse;
   min-width: 1200px;
   font-size: 0.9rem;
+  
+  @media (max-width: 768px) {
+    min-width: 900px;
+    font-size: 0.8rem;
+  }
+  
+  @media (max-width: 480px) {
+    min-width: 800px;
+    font-size: 0.75rem;
+  }
 `;
 
 const TableHead = styled.thead`
@@ -456,6 +537,16 @@ const TableCell = styled.td<{ isHeader?: boolean; isFramework?: boolean; isModel
   &:last-child {
     border-right: none;
   }
+  
+  @media (max-width: 768px) {
+    padding: 0.75rem 0.5rem;
+    font-size: ${props => props.isFramework ? '0.9rem' : 'inherit'};
+  }
+  
+  @media (max-width: 480px) {
+    padding: 0.5rem 0.375rem;
+    font-size: ${props => props.isFramework ? '0.8rem' : 'inherit'};
+  }
 `;
 
 const HeaderGroup = styled.th<{ colSpan?: number }>`
@@ -470,6 +561,16 @@ const HeaderGroup = styled.th<{ colSpan?: number }>`
   &:last-child {
     border-right: none;
   }
+  
+  @media (max-width: 768px) {
+    padding: 0.75rem 0.5rem;
+    font-size: 1rem;
+  }
+  
+  @media (max-width: 480px) {
+    padding: 0.5rem 0.375rem;
+    font-size: 0.9rem;
+  }
 `;
 
 const MetricHeader = styled.th`
@@ -483,6 +584,16 @@ const MetricHeader = styled.th`
   
   &:last-child {
     border-right: none;
+  }
+  
+  @media (max-width: 768px) {
+    padding: 0.5rem 0.375rem;
+    font-size: 0.8rem;
+  }
+  
+  @media (max-width: 480px) {
+    padding: 0.375rem 0.25rem;
+    font-size: 0.75rem;
   }
 `;
 

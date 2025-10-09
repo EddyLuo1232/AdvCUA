@@ -17,6 +17,15 @@ const HeroSection = styled.section`
   padding: 4rem 2rem;
   position: relative;
   overflow: hidden;
+  
+  @media (max-width: 768px) {
+    padding: 6rem 1rem 3rem;
+    min-height: 100svh;
+  }
+  
+  @media (max-width: 480px) {
+    padding: 5rem 0.75rem 2rem;
+  }
 `;
 
 const HeroContent = styled.div`
@@ -40,13 +49,26 @@ const Title = styled(motion.h1)`
 `;
 
 const AuthorInfo = styled(motion.div)`
-  font-size: clamp(0.85rem, 1.5vw, 1rem);
+  font-size: clamp(0.75rem, 1.5vw, 1rem);
   color: ${props => props.theme.colors.textSecondary};
   margin-bottom: 3rem;
   max-width: 900px;
   margin-left: auto;
   margin-right: auto;
   line-height: 1.6;
+  
+  @media (max-width: 768px) {
+    font-size: clamp(0.7rem, 1.8vw, 0.9rem);
+    margin-bottom: 2rem;
+    max-width: 100%;
+    line-height: 1.5;
+  }
+  
+  @media (max-width: 480px) {
+    font-size: 0.75rem;
+    margin-bottom: 1.5rem;
+    line-height: 1.4;
+  }
 `;
 
 const AuthorName = styled.span`
@@ -57,6 +79,15 @@ const AuthorName = styled.span`
 const Affiliation = styled.span`
   font-size: 0.9em;
   color: ${props => props.theme.colors.textSecondary};
+  
+  @media (max-width: 768px) {
+    font-size: 0.85em;
+    display: inline-block;
+  }
+  
+  @media (max-width: 480px) {
+    font-size: 0.8em;
+  }
 `;
 
 
@@ -65,6 +96,19 @@ const ButtonGroup = styled(motion.div)`
   gap: 1rem;
   justify-content: center;
   flex-wrap: wrap;
+  
+  @media (max-width: 768px) {
+    gap: 0.75rem;
+    flex-direction: column;
+    align-items: center;
+    max-width: 280px;
+    margin: 0 auto;
+  }
+  
+  @media (max-width: 480px) {
+    gap: 0.5rem;
+    max-width: 260px;
+  }
 `;
 
 const Button = styled(motion.div)`
@@ -102,6 +146,26 @@ const Button = styled(motion.div)`
   
   &:hover::before {
     left: 100%;
+  }
+  
+  @media (max-width: 768px) {
+    padding: 0.875rem 2rem;
+    font-size: 0.9rem;
+    width: 100%;
+    justify-content: center;
+    
+    span {
+      font-size: 1.1em;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    padding: 0.75rem 1.5rem;
+    font-size: 0.85rem;
+    
+    span {
+      font-size: 1em;
+    }
   }
 `;
 
@@ -165,6 +229,18 @@ const Stats = styled(motion.div)`
   justify-content: center;
   margin-top: 4rem;
   flex-wrap: wrap;
+  
+  @media (max-width: 768px) {
+    gap: 2rem;
+    margin-top: 2.5rem;
+  }
+  
+  @media (max-width: 480px) {
+    gap: 1.5rem;
+    margin-top: 2rem;
+    flex-direction: row;
+    justify-content: space-around;
+  }
 `;
 
 const Stat = styled.div`
@@ -175,12 +251,28 @@ const StatNumber = styled.div`
   font-size: 2rem;
   font-weight: 700;
   color: ${props => props.theme.colors.primary};
+  
+  @media (max-width: 768px) {
+    font-size: 1.75rem;
+  }
+  
+  @media (max-width: 480px) {
+    font-size: 1.5rem;
+  }
 `;
 
 const StatLabel = styled.div`
   font-size: 0.875rem;
   color: ${props => props.theme.colors.textSecondary};
   margin-top: 0.25rem;
+  
+  @media (max-width: 768px) {
+    font-size: 0.8rem;
+  }
+  
+  @media (max-width: 480px) {
+    font-size: 0.75rem;
+  }
 `;
 
 const Background = styled.div`
@@ -226,7 +318,7 @@ export const Hero: React.FC = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
         >
-          Computer-Use Agent Frameworks Can Expose Realistic Risks Through Tactics, Techniques, and Procedures
+          Code Agent can be an End-to-end System Hacker: Benchmarking Real-world Threats of Computer-use Agent
         </Title>
         
         <AuthorInfo

@@ -6,6 +6,14 @@ const ThreatModelSection = styled.section`
   padding: 4rem 2rem;
   max-width: 1200px;
   margin: 0 auto;
+  
+  @media (max-width: 768px) {
+    padding: 3rem 1rem;
+  }
+  
+  @media (max-width: 480px) {
+    padding: 2rem 0.75rem;
+  }
 `;
 
 const SectionTitle = styled.h2`
@@ -18,6 +26,16 @@ const SectionTitle = styled.h2`
   -webkit-text-fill-color: transparent;
   background-clip: text;
   text-shadow: 0 0 20px rgba(79, 195, 247, 0.3);
+  
+  @media (max-width: 768px) {
+    font-size: 2rem;
+    margin-bottom: 0.75rem;
+  }
+  
+  @media (max-width: 480px) {
+    font-size: 1.75rem;
+    margin-bottom: 0.5rem;
+  }
 `;
 
 const ThreatModelContainer = styled.div`
@@ -48,6 +66,16 @@ const ThreatModelContainer = styled.div`
     border-color: rgba(59, 130, 246, 0.3);
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
   }
+  
+  @media (max-width: 768px) {
+    padding: 2rem 1.5rem;
+    margin: 1.5rem auto;
+  }
+  
+  @media (max-width: 480px) {
+    padding: 1.5rem 1rem;
+    margin: 1rem auto;
+  }
 `;
 
 const EnvironmentGrid = styled.div`
@@ -56,6 +84,17 @@ const EnvironmentGrid = styled.div`
   gap: 1.5rem;
   margin-bottom: 2rem;
   position: relative;
+  
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  @media (max-width: 480px) {
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+  }
 `;
 
 const EnvironmentCard = styled.div`
@@ -196,6 +235,17 @@ const ScenarioGrid = styled.div`
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 1.5rem;
   margin-top: 2rem;
+  
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    margin-top: 1.5rem;
+  }
+  
+  @media (max-width: 480px) {
+    gap: 0.75rem;
+    margin-top: 1rem;
+  }
 `;
 
 interface ScenarioCardProps {
