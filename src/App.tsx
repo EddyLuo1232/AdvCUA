@@ -4,6 +4,7 @@ import { GlobalStyles } from './styles/GlobalStyles';
 import { theme } from './styles/theme';
 import { Navigation } from './components/Navigation';
 import { Hero } from './components/Hero';
+import { VideoShowcase } from './components/VideoShowcase';
 import { Demo } from './components/Demo';
 import { ThreatModel } from './components/ThreatModel';
 import { Abstract, Dataset, Evaluation, Results, Conclusion } from './components/Sections';
@@ -17,6 +18,7 @@ function App() {
       <DigitalRainBackground density={0.03} flickerSpeed={0.08} />
       <Navigation />
       <Hero />
+      <VideoShowcase />
       <ThreatModel />
       <Demo />
       <Abstract />
